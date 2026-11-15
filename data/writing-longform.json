@@ -4,7 +4,7 @@
     "date": "2021-03-23",
     "url": "https://ballnine.com/2021/03/23/dont-stress-the-stress/",
     "source": "BallNine",
-    "thumbnail": "https://ballnine.com/wp-content/uploads/2021/03/TheSyndicate_Stress_Feature.jpg",
+    "thumbnail": "/assets/images/thumbs/ballnine-TheSyndicate_Stress_Feature.webp",
     "authors": ["Josh Hejka"],
     "pinned": true
   },
@@ -13,7 +13,7 @@
     "date": "2021-04-19",
     "url": "https://metsmerizedonline.com/hanging-with-hejka-returning-to-action-in-a-new-world/",
     "source": "Metsmerized",
-    "thumbnail": "https://metsmerizedonline.com/wp-content/uploads/2023/05/josh-hejka3.jpeg",
+    "thumbnail": "/assets/images/thumbs/metsmerizedonline-josh-hejka3.webp",
     "authors": ["Josh Hejka"]
   }
 ]
