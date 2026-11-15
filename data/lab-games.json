@@ -2,7 +2,7 @@
   {
     "title": "Hot Stove",
     "url": "https://hotstove.io/",
-    "thumbnail": "https://hotstove.io/og-image.png",
+    "thumbnail": "/assets/images/thumbs/hotstove-og-image.webp",
     "thumbnailPreview": "http://localhost:5173/og-preview-gameplay.png"
   }
 ]

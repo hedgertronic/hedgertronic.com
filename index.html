@@ -39,19 +39,6 @@
             });
         })();
     </script>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-35RY8Y6Q5V"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      // `config` fires the automatic page_view, and localhost dev sessions must
-      // not count as production traffic. Mirrors the guard in hot-stove's
-      // index.html. Accepted gap: a LAN phone test (192.168.x) still fires.
-      var h = location.hostname;
-      if (h !== 'localhost' && h !== '127.0.0.1' && h !== '')
-        gtag('config', 'G-35RY8Y6Q5V');
-    </script>
     <meta name="description" content="Professional pitcher in the Marlins organization and R&D analyst at Driveline Baseball.">
 
     <!-- Open Graph -->
@@ -90,6 +77,14 @@
         [data-theme="hopkins"], [data-theme="hopkins"] body { background-color: #0a0f17; }
     </style>
     <link rel="stylesheet" href="/styles.css">
+    <noscript>
+        <style>
+            /* Without JS, nothing adds .rendered or .revealed: show the
+               prerendered hero and sections as they are. */
+            .hero > .container { visibility: visible; }
+            .content-section > .container { opacity: 1; transform: none; }
+        </style>
+    </noscript>
     <script>
         // Preload theme-specific headshot for faster LCP (uses config from above)
         (function() {

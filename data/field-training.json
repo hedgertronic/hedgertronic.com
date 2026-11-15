@@ -3,7 +3,7 @@
     "type": "video",
     "label": "Early Offseason",
     "order": 1,
-    "poster": "assets/images/instagram/DOjJyYZieLv.jpg",
+    "poster": "/assets/images/instagram/DOjJyYZieLv.webp",
     "url": "https://www.instagram.com/p/DOjJyYZieLv/",
     "credit": {
       "handle": "crider_performance",
@@ -16,7 +16,7 @@
     "type": "video",
     "label": "Late Offseason",
     "order": 2,
-    "poster": "assets/images/instagram/DTN_tdBkXSt.jpg",
+    "poster": "/assets/images/instagram/DTN_tdBkXSt.webp",
     "url": "https://www.instagram.com/p/DTN_tdBkXSt/",
     "credit": {
       "handle": "hedgertronic",
@@ -30,7 +30,7 @@
     "type": "video",
     "label": "Building the Engine",
     "order": 3,
-    "poster": "assets/images/instagram/DTiii7HkcpJ.jpg",
+    "poster": "/assets/images/instagram/DTiii7HkcpJ.webp",
     "url": "https://www.instagram.com/p/DTiii7HkcpJ/",
     "credit": {
       "handle": "hedgertronic",
@@ -43,7 +43,7 @@
     "type": "video",
     "label": "Athletic Development",
     "order": 4,
-    "poster": "assets/images/instagram/DS8iKv2kfWW.jpg",
+    "poster": "/assets/images/instagram/DS8iKv2kfWW.webp",
     "url": "https://www.instagram.com/p/DS8iKv2kfWW/",
     "credit": {
       "handle": "hedgertronic",

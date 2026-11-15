@@ -45,6 +45,34 @@ export const LEVEL_TO_CATEGORY = {
   AAA: "Minors",
 };
 
+/** Career-total rows from the parsed stats CSV, keyed by category. */
+export function getCareerRows(statsData) {
+  return {
+    College: statsData.find((row) => row.Season === "College Career"),
+    Independent: statsData.find((row) => row.Season === "Independent Career"),
+    Minors: statsData.find((row) => row.Season === "Minors Career"),
+  };
+}
+
+function getStatsLinkConfig(statsLinks) {
+  return {
+    Minors: statsLinks?.find((l) => l.name === "MiLB"),
+    College: statsLinks?.find((l) => l.name === "BBRef"),
+    Independent: statsLinks?.find((l) => l.name === "BBRef"),
+  };
+}
+
+function getHighlightValues(careerRow) {
+  return {
+    ERA: careerRow?.ERA || "-",
+    "W-L": careerRow ? `${careerRow.W}-${careerRow.L}` : "-",
+    G: careerRow?.G || "-",
+    IP: careerRow?.IP || "-",
+    SO: careerRow?.SO || "-",
+    WHIP: careerRow?.WHIP || "-",
+  };
+}
+
 /**
  * Builds the career stats category selector, optional overview cards, and
  * stats table into a container element. Also appends the view-stats link into
@@ -61,21 +89,13 @@ export const LEVEL_TO_CATEGORY = {
 export function buildStatsTable(container, statsData, statsLinks, options = {}) {
   const { headerEl, statsHighlights, highlightLabels } = options;
 
-  const careerRows = {
-    College: statsData.find((row) => row.Season === "College Career"),
-    Independent: statsData.find((row) => row.Season === "Independent Career"),
-    Minors: statsData.find((row) => row.Season === "Minors Career"),
-  };
+  const careerRows = getCareerRows(statsData);
 
   const seasonRows = statsData.filter(
     (row) => /^\d{4}$/.test(row.Season) && /\d+\s*teams?$/i.test(row.Team)
   );
 
-  const statsLinkConfig = {
-    Minors: statsLinks?.find((l) => l.name === "MiLB"),
-    College: statsLinks?.find((l) => l.name === "BBRef"),
-    Independent: statsLinks?.find((l) => l.name === "BBRef"),
-  };
+  const statsLinkConfig = getStatsLinkConfig(statsLinks);
 
   const viewStatsLink = createElement("a", {
     href: statsLinkConfig.Minors?.url || "#",
@@ -145,23 +165,10 @@ export function buildStatsTable(container, statsData, statsLinks, options = {}) 
 
   // Overview highlight cards (main-page only)
   let statsOverview = null;
-  let getHighlightValues = null;
 
   if (statsHighlights && highlightLabels) {
-    getHighlightValues = (category) => {
-      const careerRow = careerRows[category];
-      return {
-        ERA: careerRow?.ERA || "-",
-        "W-L": careerRow ? `${careerRow.W}-${careerRow.L}` : "-",
-        G: careerRow?.G || "-",
-        IP: careerRow?.IP || "-",
-        SO: careerRow?.SO || "-",
-        WHIP: careerRow?.WHIP || "-",
-      };
-    };
-
     statsOverview = createElement("div", { className: "stats-overview" });
-    const initialHighlights = getHighlightValues("Minors");
+    const initialHighlights = getHighlightValues(careerRows.Minors);
     statsHighlights.forEach((stat) => {
       const card = createElement("div", { className: "stat-card-large" });
       const statValue = createElement("div", {
@@ -286,7 +293,41 @@ export function buildStatsTable(container, statsData, statsLinks, options = {}) 
   tableWrapper.appendChild(table);
   container.appendChild(tableWrapper);
 
-  // Category selector click handler
+  bindStatsCategorySelector({
+    categorySelector,
+    table,
+    statsOverview,
+    viewStatsLink,
+    careerRows,
+    statsLinks,
+  });
+}
+
+/**
+ * Wires the category buttons to show that category's rows, career totals,
+ * overview values, column headers and source link.
+ *
+ * @param {Object} parts
+ * @param {HTMLElement} parts.categorySelector - `.stats-category-selector`
+ * @param {HTMLTableElement} parts.table - `.stats-table`
+ * @param {HTMLElement|null} parts.statsOverview - `.stats-overview`, if rendered
+ * @param {HTMLAnchorElement} parts.viewStatsLink - The "View MiLB" link
+ * @param {Object} parts.careerRows - Output of getCareerRows
+ * @param {Array|undefined} parts.statsLinks - Array of { name, url } link configs
+ */
+export function bindStatsCategorySelector({
+  categorySelector,
+  table,
+  statsOverview,
+  viewStatsLink,
+  careerRows,
+  statsLinks,
+}) {
+  const thead = table.tHead;
+  const tbody = table.tBodies[0];
+  const tfoot = table.tFoot;
+  const statsLinkConfig = getStatsLinkConfig(statsLinks);
+
   categorySelector.addEventListener("click", (e) => {
     const btn = e.target.closest(".stats-category-btn");
     if (!btn) return;
@@ -307,8 +348,8 @@ export function buildStatsTable(container, statsData, statsLinks, options = {}) 
       levelsHeader.textContent = selectedCategory === "Minors" ? "Levels" : "League";
     }
 
-    if (statsOverview && getHighlightValues) {
-      const newHighlights = getHighlightValues(selectedCategory);
+    if (statsOverview) {
+      const newHighlights = getHighlightValues(careerRows[selectedCategory]);
       statsOverview.querySelectorAll(".stat-value").forEach((el) => {
         el.textContent = newHighlights[el.dataset.stat];
       });

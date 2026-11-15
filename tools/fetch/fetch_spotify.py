@@ -98,6 +98,22 @@ def pick_top_album(tracks: list[dict]) -> dict | None:
     return (full_albums[0] if full_albums else ranked[0])["album"]
 
 
+# The cover displays at 120 px; 240 px covers 2x screens. Spotify serves
+# 640, 300 and 64 px versions, so this usually picks the 300 px one.
+COVER_MIN_WIDTH = 240
+
+
+def pick_cover(images: list[dict]) -> str:
+    """URL of the smallest cover at least COVER_MIN_WIDTH wide, else the largest."""
+    if not images:
+        return ""
+    by_width = sorted(images, key=lambda im: im.get("width") or 0)
+    for im in by_width:
+        if (im.get("width") or 0) >= COVER_MIN_WIDTH:
+            return im["url"]
+    return by_width[-1]["url"]
+
+
 def main() -> None:
     client_id = get_secret("SPOTIFY_CLIENT_ID")
     client_secret = get_secret("SPOTIFY_CLIENT_SECRET")
@@ -128,8 +144,7 @@ def main() -> None:
         print("WARNING: no top tracks returned; keeping existing album", file=sys.stderr)
         return
 
-    images = album.get("images") or []
-    cover = images[0]["url"] if images else ""
+    cover = pick_cover(album.get("images") or [])
     artists = ", ".join(a["name"] for a in album.get("artists", []))
 
     data = load_json(PERSONAL_FILE)

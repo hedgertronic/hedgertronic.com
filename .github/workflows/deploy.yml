@@ -110,13 +110,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site
-          cp index.html 404.html robots.txt sitemap.xml styles.css script.js script.js.map _site/
+          cp index.html 404.html robots.txt sitemap.xml styles.css script.js script.js.map _headers _site/
           cp -R .well-known _site/
           cp -R resume _site/
           cp -R evolution _site/
           cp -R css _site/
           cp -R data _site/
           cp -R assets _site/
+
+      # Renders the homepage sections into _site/index.html from the data just
+      # assembled, so the page is complete without client-side data fetches.
+      - name: Prerender homepage
+        run: node tools/prerender.mjs _site
 
       - name: Check references
         run: |

@@ -2,20 +2,30 @@
  * Main entry point for the site.
  */
 
-import { loadSiteConfig, getSiteConfig } from "./data.js";
+import { loadSiteConfig, getSiteConfig, setSiteConfig } from "./data.js";
 import { createElement, createIconElement } from "./dom.js";
 import { renderHeader, renderHero, renderHeroIntro, renderFooter } from "./hero.js";
 import { renderSections } from "./sections.js";
 import { initThemeSwitcher, initScrollReveal, initNavigation, initHeadshotClickAnimation } from "./interactivity.js";
+import { readPrerenderState, hydrateHero, hydrateSections } from "./hydrate.js";
 
 async function initSite() {
   try {
-    const config = await loadSiteConfig();
+    // A prerendered page already holds the header, hero, sections and footer
+    // markup; it only needs behavior. Otherwise build everything from data.
+    const prerendered = readPrerenderState();
+    if (prerendered) {
+      setSiteConfig(prerendered.config);
+      hydrateHero(prerendered.config);
+      await hydrateSections(prerendered);
+    } else {
+      const config = await loadSiteConfig();
 
-    renderHeader(config);
-    renderHero(config);
-    await renderSections(config);
-    renderFooter(config);
+      renderHeader(config);
+      renderHero(config);
+      await renderSections(config);
+      renderFooter(config);
+    }
 
     initThemeSwitcher();
     initNavigation();
