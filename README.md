@@ -76,7 +76,7 @@ A daily GitHub Actions workflow (`.github/workflows/update-data.yml`, cron `17 9
 
 **Interactive helper** (`tools/add_training_post.py`): Assists with adding Instagram training posts — extracts the shortcode, compresses and copies the cover image, and prints a ready-to-paste JSON entry for `data/field-training.json`.
 
-**Build and one-off tools** (`tools/`): `generate_resume_pdf.py`, `process_stats.py`, and `generate_og_image.py` run in the deploy workflow; `generate_favicon.py` and `optimize_headshots.py` regenerate favicons and headshot sizes by hand.
+**Build and one-off tools** (`tools/`): `generate_resume_pdf.py`, `process_stats.py`, and `generate_og_image.py` run in the deploy workflow; `generate_favicon.py` and `optimize_headshots.py` regenerate favicons and headshot sizes by hand; `optimize_thumbnails.py` writes WebP copies of card thumbnails and posters at twice their display size and points `data/*.json` at them (rerun after adding an item with a remote or oversized image); `subset_fonts.py` subsets `assets/fonts/` to the characters and weights the site uses.
 
 **Not yet automated** (future work):
 
