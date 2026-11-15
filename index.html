@@ -90,6 +90,14 @@
         [data-theme="hopkins"], [data-theme="hopkins"] body { background-color: #0a0f17; }
     </style>
     <link rel="stylesheet" href="/styles.css">
+    <noscript>
+        <style>
+            /* Without JS, nothing adds .rendered or .revealed: show the
+               prerendered hero and sections as they are. */
+            .hero > .container { visibility: visible; }
+            .content-section > .container { opacity: 1; transform: none; }
+        </style>
+    </noscript>
     <script>
         // Preload theme-specific headshot for faster LCP (uses config from above)
         (function() {
