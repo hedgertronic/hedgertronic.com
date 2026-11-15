@@ -4,7 +4,7 @@
 
 import { ICONS } from "./icons.js";
 import { setTrustedHTML, createIconElement } from "./dom.js";
-import { initCarouselScrollDetection, displayEmptyState, formatDate, isWithinDays, sortByDate } from "./ui.js";
+import { initCarouselScrollDetection, displayEmptyState, formatDate, isWithinDays, sortByDate, NEW_BADGE_DAYS } from "./ui.js";
 import { renderCaption } from "./training-card.js";
 
 export function displayError(containerOrId) {
@@ -97,6 +97,22 @@ export function displayTweets(containerOrId, items, handle) {
   });
 }
 
+/**
+ * True on a local dev host, where a card's unapproved `thumbnailPreview` image
+ * stands in for its canonical `thumbnail`.
+ */
+export function isPreviewHost() {
+  return ["localhost", "127.0.0.1"].includes(location.hostname);
+}
+
+/** Hides a card thumbnail that fails to load and marks its wrapper. */
+export function bindThumbnailFallback(thumb, thumbWrapper) {
+  thumb.onerror = () => {
+    thumb.style.display = "none";
+    thumbWrapper.classList.add("thumbnail-error");
+  };
+}
+
 // GitHub language colors
 const LANGUAGE_COLORS = {
   JavaScript: "#f1e05a",
@@ -130,7 +146,7 @@ export function createProjectCard(project) {
   // same thumbnail anatomy as articles gives Games a real preview without
   // inventing a second image-card system.
   const thumbnail =
-    project.thumbnailPreview && ["localhost", "127.0.0.1"].includes(location.hostname)
+    project.thumbnailPreview && isPreviewHost()
       ? project.thumbnailPreview
       : project.thumbnail;
   if (thumbnail) {
@@ -143,10 +159,7 @@ export function createProjectCard(project) {
     thumb.alt = project.thumbnailAlt || `${project.title} preview`;
     thumb.loading = "lazy";
     thumb.referrerPolicy = "no-referrer";
-    thumb.onerror = () => {
-      thumb.style.display = "none";
-      thumbWrapper.classList.add("thumbnail-error");
-    };
+    bindThumbnailFallback(thumb, thumbWrapper);
     thumbWrapper.appendChild(thumb);
     card.appendChild(thumbWrapper);
   }
@@ -157,7 +170,7 @@ export function createProjectCard(project) {
   card.appendChild(title);
 
   // Badge row (pinned/new/gist)
-  const isNew = project.date && isWithinDays(project.date, 30);
+  const isNew = project.date && isWithinDays(project.date, NEW_BADGE_DAYS);
   const isGist = project.url && project.url.includes("gist.github.com");
   if (isNew || project.pinned || isGist) {
     const badgeRow = document.createElement("div");
@@ -293,7 +306,7 @@ export function createTweetCard(item, handle) {
 
   card.appendChild(header);
 
-  const isNew = isWithinDays(item.date, 30);
+  const isNew = isWithinDays(item.date, NEW_BADGE_DAYS);
   if (isNew || item.pinned) {
     const badgeRow = document.createElement("div");
     badgeRow.className = "card-badge-row";
@@ -368,13 +381,13 @@ export function createContentCard(item) {
 
   // Dateless items (the game cards) are never "new" — same guard the project
   // card uses; isWithinDays splits the string and throws on undefined.
-  const isNew = item.date ? isWithinDays(item.date, 30) : false;
+  const isNew = item.date ? isWithinDays(item.date, NEW_BADGE_DAYS) : false;
   const hasBadges = isNew || item.pinned;
 
   // Same localhost substitution the project cards make: an unapproved
   // candidate image may stand in for the canonical one during local review.
   const thumbSrc =
-    item.thumbnailPreview && ["localhost", "127.0.0.1"].includes(location.hostname)
+    item.thumbnailPreview && isPreviewHost()
       ? item.thumbnailPreview
       : item.thumbnail;
   if (thumbSrc) {
@@ -387,10 +400,7 @@ export function createContentCard(item) {
     thumb.alt = item.title;
     thumb.loading = "lazy";
     thumb.referrerPolicy = "no-referrer";
-    thumb.onerror = () => {
-      thumb.style.display = "none";
-      thumbWrapper.classList.add("thumbnail-error");
-    };
+    bindThumbnailFallback(thumb, thumbWrapper);
     thumbWrapper.appendChild(thumb);
 
     if (hasBadges) {

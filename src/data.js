@@ -14,6 +14,10 @@ export function getSiteConfig() {
   return siteConfig;
 }
 
+export function setSiteConfig(config) {
+  siteConfig = config;
+}
+
 export function parseCSV(text) {
   const lines = text.trim().split("\n");
   const headers = lines[0].split(",");

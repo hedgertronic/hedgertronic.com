@@ -4,7 +4,7 @@
 
 import { createElement, createIconElement } from "./dom.js";
 import { parseCSV } from "./data.js";
-import { initCarouselScrollDetection, formatDate, isWithinDays, sortByDate } from "./ui.js";
+import { initCarouselScrollDetection, formatDate, isWithinDays, sortByDate, NEW_BADGE_DAYS } from "./ui.js";
 import { displayProjects, displayContent, displayTweets, displayError } from "./cards.js";
 import { buildStatsTable } from "./stats-table.js";
 import { renderCaption } from "./training-card.js";
@@ -12,25 +12,36 @@ import { renderCaption } from "./training-card.js";
 export async function renderSections(config) {
   const main = document.querySelector("main");
 
-  const sectionPromises = config.sections.map(async (section, index) => {
-    const sectionEl = createElement("section", {
-      id: section.id,
-      className: "content-section" + (index % 2 === 0 ? " alt-bg" : ""),
-    });
-
-    if (section.type === "stats") {
-      await renderStatsSection(sectionEl, section, config);
-    } else if (section.type === "personal") {
-      await renderPersonalSection(sectionEl, section, config);
-    } else {
-      await renderContentSection(sectionEl, section, config);
-    }
-
-    return sectionEl;
-  });
+  const sectionPromises = config.sections.map((section, index) => renderSection(section, index, config));
 
   const sections = await Promise.all(sectionPromises);
   sections.forEach((sectionEl) => main.appendChild(sectionEl));
+}
+
+/** Fetches one section's data and returns its detached `<section>` element. */
+export async function renderSection(section, index, config) {
+  const sectionEl = createElement("section", {
+    id: section.id,
+    className: "content-section" + (index % 2 === 0 ? " alt-bg" : ""),
+  });
+
+  if (section.type === "stats") {
+    await renderStatsSection(sectionEl, section, config);
+  } else if (section.type === "personal") {
+    await renderPersonalSection(sectionEl, section, config);
+  } else {
+    await renderContentSection(sectionEl, section, config);
+  }
+
+  return sectionEl;
+}
+
+/** Drops a training card's poster that fails to load and marks the card. */
+export function bindPosterFallback(img, imgWrapper, card) {
+  img.onerror = () => {
+    imgWrapper.remove();
+    card.classList.add("no-poster");
+  };
 }
 
 export async function renderStatsSection(container, section, config) {
@@ -129,10 +140,7 @@ export async function renderStatsSection(container, section, config) {
             alt: "Training video thumbnail",
             loading: "lazy",
           });
-          img.onerror = () => {
-            imgWrapper.remove();
-            card.classList.add("no-poster");
-          };
+          bindPosterFallback(img, imgWrapper, card);
           imgWrapper.appendChild(img);
           card.appendChild(imgWrapper);
           card.appendChild(createElement("div", { className: "training-bg-overlay" }));
@@ -153,7 +161,7 @@ export async function renderStatsSection(container, section, config) {
         }
         card.appendChild(header);
 
-        const isNew = item.date && isWithinDays(item.date, 30);
+        const isNew = item.date && isWithinDays(item.date, NEW_BADGE_DAYS);
         if (isNew || item.pinned) {
           const badgeRow = createElement("div", { className: "card-badge-row" });
           if (item.pinned) {

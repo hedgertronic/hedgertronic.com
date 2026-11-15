@@ -64,6 +64,15 @@ export function initCarouselScrollDetection(carousel) {
   wrapper.className = "content-grid-wrapper";
   carousel.parentNode.insertBefore(wrapper, carousel);
   wrapper.appendChild(carousel);
+  attachCarouselScrollDetection(carousel);
+}
+
+/**
+ * Keeps the edge-fade classes on a carousel's existing `.content-grid-wrapper`
+ * parent in sync with its scroll position.
+ */
+export function attachCarouselScrollDetection(carousel) {
+  const wrapper = carousel.parentNode;
 
   function updateScrollIndicators() {
     const { scrollLeft, scrollWidth, clientWidth } = carousel;
@@ -382,6 +391,9 @@ export function formatDate(dateString) {
     day: "numeric",
   });
 }
+
+// Age in days up to which a dated card carries the "New" badge.
+export const NEW_BADGE_DAYS = 30;
 
 export function isWithinDays(dateString, days) {
   const [year, month, day] = dateString.split("-");
