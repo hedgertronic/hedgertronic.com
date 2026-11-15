@@ -118,6 +118,11 @@ jobs:
           cp -R data _site/
           cp -R assets _site/
 
+      # Renders the homepage sections into _site/index.html from the data just
+      # assembled, so the page is complete without client-side data fetches.
+      - name: Prerender homepage
+        run: node tools/prerender.mjs _site
+
       - name: Check references
         run: |
           python3 - << 'PYEOF'
