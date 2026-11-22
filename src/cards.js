@@ -3,7 +3,7 @@
  */
 
 import { ICONS } from "./icons.js";
-import { setTrustedHTML, createIconElement } from "./dom.js";
+import { setTrustedHTML, createIconElement, safeUrl } from "./dom.js";
 import { initCarouselScrollDetection, displayEmptyState, formatDate, isWithinDays, sortByDate, NEW_BADGE_DAYS } from "./ui.js";
 import { renderCaption } from "./training-card.js";
 
@@ -138,17 +138,18 @@ const LANGUAGE_COLORS = {
 export function createProjectCard(project) {
   const card = document.createElement("a");
   card.className = project.pinned ? "content-card project-card pinned" : "content-card project-card";
-  card.href = project.url;
+  card.href = safeUrl(project.url);
   card.target = "_blank";
   card.rel = "noopener noreferrer";
 
   // A project may carry its own share card as the visual lead. Keeping the
   // same thumbnail anatomy as articles gives Games a real preview without
-  // inventing a second image-card system.
+  // inventing a second image-card system. thumbnailPreview is a local-review
+  // image (often on http://localhost), used only on a preview host.
   const thumbnail =
     project.thumbnailPreview && isPreviewHost()
       ? project.thumbnailPreview
-      : project.thumbnail;
+      : safeUrl(project.thumbnail);
   if (thumbnail) {
     const thumbWrapper = document.createElement("div");
     thumbWrapper.className = "thumbnail-wrapper";
@@ -286,7 +287,7 @@ export function createProjectCard(project) {
 export function createTweetCard(item, handle) {
   const card = document.createElement("a");
   card.className = item.pinned ? "tweet-card pinned" : "tweet-card";
-  card.href = item.url;
+  card.href = safeUrl(item.url);
   card.target = "_blank";
   card.rel = "noopener noreferrer";
 
@@ -375,7 +376,7 @@ export function createTweetCard(item, handle) {
 export function createContentCard(item) {
   const card = document.createElement("a");
   card.className = item.pinned ? "content-card pinned" : "content-card";
-  card.href = item.url;
+  card.href = safeUrl(item.url);
   card.target = "_blank";
   card.rel = "noopener noreferrer";
 
@@ -389,7 +390,7 @@ export function createContentCard(item) {
   const thumbSrc =
     item.thumbnailPreview && isPreviewHost()
       ? item.thumbnailPreview
-      : item.thumbnail;
+      : safeUrl(item.thumbnail);
   if (thumbSrc) {
     const thumbWrapper = document.createElement("div");
     thumbWrapper.className = "thumbnail-wrapper";

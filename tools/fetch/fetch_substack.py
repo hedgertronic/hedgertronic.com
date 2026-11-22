@@ -25,7 +25,7 @@ from xml.etree.ElementTree import Element  # type annotation only; parsing uses 
 import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PROJECT_ROOT, load_json, write_json_if_changed
+from common import PROJECT_ROOT, is_https_url, load_json, write_json_if_changed
 
 DATA_FILE = PROJECT_ROOT / "data" / "writing-longform.json"
 SITE_FILE = PROJECT_ROOT / "data" / "site.json"
@@ -147,6 +147,14 @@ def fetch_feed(feed_url: str) -> list[dict] | None:
 
         date_str = parse_date(pub_date)
         thumbnail = extract_thumbnail(item)
+
+        bad_url = next((u for u in (link, thumbnail) if u and not is_https_url(u)), None)
+        if bad_url is not None:
+            print(
+                f"WARNING: skipping Substack post {title!r}: non-https URL {bad_url!r}",
+                file=sys.stderr,
+            )
+            continue
 
         entry: dict = {
             "title": title,

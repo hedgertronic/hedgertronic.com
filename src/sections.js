@@ -2,7 +2,7 @@
  * Section rendering functions.
  */
 
-import { createElement, createIconElement } from "./dom.js";
+import { createElement, createIconElement, safeUrl } from "./dom.js";
 import { parseCSV } from "./data.js";
 import { initCarouselScrollDetection, formatDate, isWithinDays, sortByDate, NEW_BADGE_DAYS } from "./ui.js";
 import { displayProjects, displayContent, displayTweets, displayError } from "./cards.js";
@@ -124,7 +124,7 @@ export async function renderStatsSection(container, section, config) {
       if (item.type === "video") {
         const cardLink = item.url
           ? createElement("a", {
-              href: item.url,
+              href: safeUrl(item.url),
               target: "_blank",
               rel: "noopener noreferrer",
               className: "training-card-link",
@@ -136,7 +136,7 @@ export async function renderStatsSection(container, section, config) {
         if (item.poster) {
           const imgWrapper = createElement("div", { className: "training-bg-wrapper" });
           const img = createElement("img", {
-            src: item.poster,
+            src: safeUrl(item.poster),
             alt: "Training video thumbnail",
             loading: "lazy",
           });
@@ -260,7 +260,7 @@ export async function renderContentSection(container, section, config) {
 
     if (subsection.viewAllUrl) {
       const viewAllLink = createElement("a", {
-        href: subsection.viewAllUrl,
+        href: safeUrl(subsection.viewAllUrl),
         target: "_blank",
         className: "view-all-link",
         textContent: subsection.viewAllLabel,
@@ -325,7 +325,7 @@ export async function renderPersonalSection(container, section, config) {
 
     if (data.reading) {
       const readingCard = createElement("a", {
-        href: data.reading.book.url,
+        href: safeUrl(data.reading.book.url),
         target: "_blank",
         rel: "noopener noreferrer",
         className: "personal-card",
@@ -341,7 +341,7 @@ export async function renderPersonalSection(container, section, config) {
       }));
 
       readingCard.appendChild(createElement("img", {
-        src: data.reading.book.cover,
+        src: safeUrl(data.reading.book.cover),
         alt: data.reading.book.title,
         className: "personal-cover",
         loading: "lazy",
@@ -361,7 +361,7 @@ export async function renderPersonalSection(container, section, config) {
 
     if (data.listening) {
       const listeningCard = createElement("a", {
-        href: data.listening.album.url,
+        href: safeUrl(data.listening.album.url),
         target: "_blank",
         rel: "noopener noreferrer",
         className: "personal-card",
@@ -377,7 +377,7 @@ export async function renderPersonalSection(container, section, config) {
       }));
 
       listeningCard.appendChild(createElement("img", {
-        src: data.listening.album.cover,
+        src: safeUrl(data.listening.album.cover),
         alt: data.listening.album.title,
         className: "personal-cover",
         loading: "lazy",
@@ -413,7 +413,7 @@ export async function renderPersonalSection(container, section, config) {
 
       Object.values(data.chess.links).forEach((linkData) => {
         const link = createElement("a", {
-          href: linkData.url,
+          href: safeUrl(linkData.url),
           target: "_blank",
           rel: "noopener noreferrer",
           className: "personal-card-link",
