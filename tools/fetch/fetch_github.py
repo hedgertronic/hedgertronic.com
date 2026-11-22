@@ -29,7 +29,7 @@ from common import PROJECT_ROOT, load_json, write_json_if_changed
 DATA_FILE = PROJECT_ROOT / "data" / "lab-projects.json"
 GITHUB_API_BASE = "https://api.github.com/repos/hedgertronic"
 GITHUB_REPO_RE = re.compile(r"github\.com/hedgertronic/([^/?#]+)")
-SITE_REPO = "hedgertronic.github.io"
+SITE_REPO = "hedgertronic.com"
 
 
 def _headers(token: str | None) -> dict:
