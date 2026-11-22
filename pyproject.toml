@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "defusedxml>=0.7",
     "fpdf2",
-    "pillow>=10.0",
+    "pillow>=13.0.0",
     "requests>=2.31",
 ]
 
