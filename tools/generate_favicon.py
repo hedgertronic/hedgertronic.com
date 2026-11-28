@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Favicon generation tool for hedgertronic.github.io
+Favicon generation tool for hedgertronic.com
 
 Usage:
     # Create circular image from square photo

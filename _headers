@@ -2,6 +2,17 @@
 # HTML, data/, script.js and styles.css keep the default (revalidate on every
 # load) because they change without a filename change.
 
+# Every response. Nothing on the site is framed by another origin. The CSP is
+# report-only: 'unsafe-inline' covers the pre-paint theme scripts, inline
+# style attributes and Cloudflare's injected /cdn-cgi/ bot script; img-src
+# allows any https: host for feed thumbnails and covers; frames are the
+# YouTube and Vimeo players.
+/*
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+
 # Fonts change rarely, and an older cached copy still renders.
 /assets/fonts/*
   Cache-Control: public, max-age=2592000

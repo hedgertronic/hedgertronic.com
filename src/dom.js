@@ -27,6 +27,22 @@ export function createElement(tag, attributes = {}, children = []) {
   return el;
 }
 
+const URL_SCHEME = /^([a-z][a-z0-9+.-]*):/i;
+
+/**
+ * Returns url if it is https:, mailto: or relative, else "". Used where data
+ * from JSON (including fetched feeds) is assigned to href or src. The scheme
+ * is read after the cleanup a browser does first: surrounding spaces and
+ * control characters dropped, tabs and newlines removed.
+ */
+export function safeUrl(url) {
+  if (typeof url !== "string") return "";
+  const cleaned = url.replace(/^[\u0000- ]+|[\u0000- ]+$/g, "").replace(/[\t\n\r]/g, "");
+  const scheme = cleaned.match(URL_SCHEME);
+  if (!scheme) return url;
+  return ["https", "mailto"].includes(scheme[1].toLowerCase()) ? url : "";
+}
+
 // Helper to set HTML content (for trusted owner-controlled data only)
 export function setTrustedHTML(element, html) {
   // Note: This data comes from site owner's config files, not user input

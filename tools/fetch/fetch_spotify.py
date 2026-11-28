@@ -22,7 +22,7 @@ from pathlib import Path
 
 import requests
 
-from common import PROJECT_ROOT, load_json, write_json_if_changed
+from common import PROJECT_ROOT, is_https_url, load_json, write_json_if_changed
 
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 TOP_TRACKS_URL = "https://api.spotify.com/v1/me/top/tracks"
@@ -145,6 +145,15 @@ def main() -> None:
         return
 
     cover = pick_cover(album.get("images") or [])
+    album_url = (album.get("external_urls") or {}).get("spotify")
+    bad_url = next((u for u in (cover, album_url) if u and not is_https_url(u)), None)
+    if bad_url is not None:
+        print(
+            f"WARNING: Spotify album has a non-https URL ({bad_url!r}); keeping existing album",
+            file=sys.stderr,
+        )
+        return
+
     artists = ", ".join(a["name"] for a in album.get("artists", []))
 
     data = load_json(PERSONAL_FILE)
@@ -153,7 +162,7 @@ def main() -> None:
         "title": album.get("name") or existing.get("title"),
         "artist": artists or existing.get("artist"),
         "cover": cover or existing.get("cover"),
-        "url": (album.get("external_urls") or {}).get("spotify") or existing.get("url"),
+        "url": album_url or existing.get("url"),
     }
     data.setdefault("listening", {})["album"] = updated
 

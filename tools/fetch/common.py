@@ -18,6 +18,15 @@ def load_json(path: Path) -> dict | list:
         return json.load(f)
 
 
+def is_https_url(url: object) -> bool:
+    """True if url is a string that starts with https://.
+
+    Feed links and image URLs end up in href and src on the site, so fetchers
+    drop any entry whose URLs fail this check.
+    """
+    return isinstance(url, str) and url.startswith("https://")
+
+
 def write_json_if_changed(path: Path, data: dict | list) -> bool:
     """Write JSON with 2-space indent and trailing newline, only if content changed.
 

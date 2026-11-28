@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createElement, createIconElement, setTrustedHTML } from "../../src/dom.js";
+import { createElement, createIconElement, safeUrl, setTrustedHTML } from "../../src/dom.js";
+import { createContentCard } from "../../src/cards.js";
 
 describe("createElement", () => {
   it("creates an element with the specified tag", () => {
@@ -125,5 +126,53 @@ describe("createIconElement", () => {
 
     expect(twitterIcon.querySelector("svg")).not.toBeNull();
     expect(emailIcon.querySelector("svg")).not.toBeNull();
+  });
+});
+
+describe("safeUrl", () => {
+  it("keeps https, mailto and relative URLs", () => {
+    for (const url of [
+      "https://example.com/a?b=c",
+      "HTTPS://example.com/",
+      "mailto:josh@example.com",
+      "/assets/images/a.webp",
+      "assets/a.png",
+      "#top",
+      "?q=1",
+    ]) {
+      expect(safeUrl(url)).toBe(url);
+    }
+  });
+
+  it("drops other schemes, including obfuscated ones", () => {
+    for (const url of [
+      "javascript:alert(1)",
+      "JavaScript:alert(1)",
+      " javascript:alert(1)",
+      "\u0001javascript:alert(1)",
+      "java\tscript:alert(1)",
+      "java\nscript:alert(1)",
+      "data:text/html,<script>alert(1)</script>",
+      "vbscript:msgbox(1)",
+      "http://example.com/",
+    ]) {
+      expect(safeUrl(url)).toBe("");
+    }
+  });
+
+  it("returns an empty string for non-strings", () => {
+    expect(safeUrl(undefined)).toBe("");
+    expect(safeUrl(null)).toBe("");
+    expect(safeUrl(42)).toBe("");
+  });
+
+  it("guards card links and thumbnails built from feed data", () => {
+    const card = createContentCard({
+      title: "Feed post",
+      url: "javascript:alert(1)",
+      thumbnail: "data:image/svg+xml,<svg/>",
+    });
+    expect(card.getAttribute("href")).toBe("");
+    expect(card.querySelector("img.thumbnail")).toBeNull();
   });
 });
